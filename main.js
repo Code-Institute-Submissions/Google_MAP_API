@@ -1,6 +1,8 @@
 function getData(url, cb) {
     var xhr = new XMLHttpRequest();
 
+
+    
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             cb(JSON.parse(this.responseText));
@@ -42,9 +44,11 @@ function writeToDocument(url) {
         if (data.next || data.previous) {
             pagination = generatePaginationButtons(data.next, data.previous);
         }
+        
         data = data.results;
         var tableHeaders = getTableHeaders(data[0]);
 
+        
         data.forEach(function(item) {
             var dataRow = [];
 
@@ -58,4 +62,6 @@ function writeToDocument(url) {
 
         el.innerHTML = `<table>${tableHeaders}${tableRows}</table>${pagination}`.replace(/,/g, "");
     });
+
+       
 }
