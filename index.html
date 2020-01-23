@@ -98,12 +98,14 @@
       var map;
       var li;
       var img;
+      var plotsID = [];
       var infowindow; 
       var placesList;
       var start_centre;
       var request;
       var service;
       var marker;
+      var temp;
       var markers =[];
       var Click_List = [];
 
@@ -140,7 +142,7 @@
           zoom: 14
                  });
 
-        infowindow = new google.maps.InfoWindow({content:contentString});
+       // infowindow = new google.maps.InfoWindow({content:contentString});
        
         // Create the places service.
         service = new google.maps.places.PlacesService(map);
@@ -168,8 +170,7 @@
 
         map.addListener('rightclick', function(e){
             
-         for (var i = 0; i < markers.length; i++) {
-             
+         for (var i = 0; i < markers.length; i++) {  
           markers[i].setMap(null);
              var list = document.getElementsByTagName('li');     
          }     
@@ -186,54 +187,70 @@
            service = new google.maps.places.PlacesService(map);
            service.nearbySearch(request, callback);
 
-         });
+         
 
             function callback(results, status) {
             if (status == google.maps.places.PlacesServiceStatus.OK) {
 
-               for (var i = 0; i < results.length; i++) {             
-                  // var place = results[i];
-                 createMarker(results[i]);
+               for (var i = 0; i < results.length; i++) {               
+                 createMarker(results[i],i);
                 }
             }
             }
+          });
 
-        function createMarker(plot) {
+        function createMarker(plot,index) {
             var photoUrl;
-            
-            
+                      
             marker = new google.maps.Marker({
                        map: map,
                        draggable: true,
                        animation: google.maps.Animation.DROP,
                        position: plot.geometry.location,
                        title: plot.name,
-                       icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/parking_lot_maps.png'
+                       label: (index + 1).toString(),
+                       icon: 'assets/images/icons8-coffee-to-go-48.png'
                        // icon: location.photos[0].getUrl({maxWidth: 35, maxHeight: 35})
                      });
             
-           
-           // marker.setSnippet(plot.PlaceId);
             markers.push(marker);
-
+            plotsID.push(plot.place_id);
+           
+            infowindow = new google.maps.InfoWindow({content:contentString});
+            
+            
            // img = document.createElement("img")
            // img.src = location.photos[0].getUrl({maxWidth: 400, maxHeight: 400});
             
             
-            marker.addListener('click', function() {   
+           marker.addListener('click', function() {   
               
-              
-            if (Click_List.includes(this.title) == false) {
-               Click_List.push(this.title);  
-               
-               li = document.createElement('li');
-               li.textContent = this.title;
-               
-               placesList.appendChild(li);   
-            }
+            if (Click_List[0] != this.title) {
+                $('li').remove();
+               Click_List[0]= this.title;  
+                
+                var request = {
+                  placeId: plotsID[parseInt(this.label)-1],
+                  fields: ['name','formatted_address', 'photos']
+                };
 
-            infowindow.setContent(this.title);
-            infowindow.open(map, this);
+               service = new google.maps.places.PlacesService(map);
+               service.getDetails(request, callback);
+                      
+              function callback(place, status) {
+                 if (status == google.maps.places.PlacesServiceStatus.OK) {
+                      
+                     li = document.createElement('li');
+                     img= document.createElement('img');
+                     li.textContent = place.name;
+                     //img.src = place.photos[0];
+                     placesList.appendChild(li);
+                 }
+              }
+
+            }
+               infowindow.setContent(this.title);
+               infowindow.open(map, this);
             
 
             if (this.getAnimation() !== null) {
@@ -243,6 +260,8 @@
             };
 
             });
+
+          
             
         }
             
@@ -250,6 +269,22 @@
 
 
         /*
+
+ for (count = 0; count < locations.length; count++) {
+    marker = new google.maps.Marker ({
+      position: plot.geometry.location,
+      map: map,
+      title: plot.name
+    });
+
+     marker.addListener('click', (function (marker, count) {
+      return function () {
+        infowindow.setContent(locations[count][0]);
+        infowindow.open(map, marker);
+      }
+    }) (marker, count)
+    );
+ }
 
         function createPhotoMarker(place) {
          var photos = place.photos;
@@ -326,7 +361,7 @@
         
       } */
     </script>
-
+     <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="crossorigin="anonymous"></script>
     <script src="https://maps.googleapis.com/maps/api/js?&key=AIzaSyBhtEAceYphs2RCJ52_YjBLyp4pf0kxUoM&libraries=places&callback=initMap" async defer></script>
   </body>
 </html>
