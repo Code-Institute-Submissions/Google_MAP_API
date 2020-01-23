@@ -1,19 +1,332 @@
+ 
+
+
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Place search pagination</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #right-panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
 
-<head>
-    <title>AJAX Test</title>
-    <script src="main.js"></script> 
-</head>
+      #right-panel select, #right-panel input {
+        font-size: 15px;
+      }
 
-<body>
-    <button onclick="writeToDocument('https://swapi.co/api/people')">People</button>
-    <button onclick="writeToDocument('https://swapi.co/api/planets')">Planets</button>
-    <button onclick="writeToDocument('https://swapi.co/api/species')">Species</button>
-    <button onclick="writeToDocument('https://swapi.co/api/starships')">Starship</button>
-    <button onclick="writeToDocument('https://swapi.co/api/vehicles')">Vehicles</button>
-    <button onclick="writeToDocument('https://swapi.co/api/films')">Films</button>
-    <div id="data"></div>
-</body>
+      #right-panel select {
+        width: 100%;
+      }
 
+      #right-panel i {
+        font-size: 12px;
+      }
+      #right-panel {
+        font-family: Arial, Helvetica, sans-serif;
+        position: relative; 
+        
+        
+        height: 330px;
+        
+        padding: 5px;
+        z-index: 5;
+        border: 1px solid #999;
+        background: #fff;
+      }
+      h2 {
+        font-size: 22px;
+        margin: 0 0 5px 0;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        height: 271px;
+        overflow-y: scroll;
+      }
+      li {
+        background-color: #f1f1f1;
+        padding: 10px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      li:nth-child(odd) {
+        background-color: #fcfcfc;
+      }
+      #more {
+        width: 100%;
+        margin: 5px 0 0 0;
+      }
+    </style>
+   
+  </head>
+  <body>
+    <div id="map"></div>
+     
+    
+    <div id="right-panel">
+      <ul id="location-details">
+     <!--
+      <h2>Results</h2>
+      <ul id="places"></ul>
+      <button id="more">More results</button>
+      -->
+       </ul>
+    </div>
+     
+<script>
+      // This example requires the Places library. Include the libraries=places
+      // parameter when you first load the API. For example:
+      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+      var map;
+      var li;
+      var img;
+      var infowindow; 
+      var placesList;
+      var start_centre;
+      var request;
+      var service;
+      var marker;
+      var markers =[];
+      var Click_List = [];
+
+      function initMap() {
+        
+        var contentString = '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
+      '<div id="bodyContent">'+
+      '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
+      'sandstone rock formation in the southern part of the '+
+      'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
+      'south west of the nearest large town, Alice Springs; 450&#160;km '+
+      '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
+      'features of the Uluru - Kata Tjuta National Park. Uluru is '+
+      'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
+      'Aboriginal people of the area. It has many springs, waterholes, '+
+      'rock caves and ancient paintings. Uluru is listed as a World '+
+      'Heritage Site.</p>'+
+      '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
+      'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
+      '(last visited June 22, 2009).</p>'+
+      '</div>'+
+      '</div>';
+        
+        // Create the map.
+        start_centre = new google.maps.LatLng(37.419857, -122.078827);
+        
+        // infoWindow = new google.maps.infoWindow();
+        map = new google.maps.Map(document.getElementById('map'),
+           {
+          center: start_centre,
+          zoom: 14
+                 });
+
+        infowindow = new google.maps.InfoWindow({content:contentString});
+       
+        // Create the places service.
+        service = new google.maps.places.PlacesService(map);
+        
+       /*
+        map.addListener('click', function(e) {
+          placeMarkerAndPanTo(e.latLng, map);
+            });
+
+        function placeMarkerAndPanTo(latLng, map) {
+          var marker = new google.maps.Marker({
+           position: latLng,
+           map: map
+            });
+               map.panTo(latLng);
+               infowindow.open(map, marker);
+        }
+          */
+            var header = document.createElement('h1');
+            var panel = document.getElementById('right-panel');
+            header.textContent = 'Cafe List';
+            panel.insertBefore(header,panel.childNodes[0]);
+            placesList = document.getElementById('location-details');
+            
+
+        map.addListener('rightclick', function(e){
+            
+         for (var i = 0; i < markers.length; i++) {
+             
+          markers[i].setMap(null);
+             var list = document.getElementsByTagName('li');     
+         }     
+
+             map.setCenter(e.latLng);
+            // clearResults(markers);
+            
+           var request = {
+              location: e.latLng,
+              radius: 1000,
+              types: ['cafe']
+               };
+
+           service = new google.maps.places.PlacesService(map);
+           service.nearbySearch(request, callback);
+
+         });
+
+            function callback(results, status) {
+            if (status == google.maps.places.PlacesServiceStatus.OK) {
+
+               for (var i = 0; i < results.length; i++) {             
+                  // var place = results[i];
+                 createMarker(results[i]);
+                }
+            }
+            }
+
+        function createMarker(plot) {
+            var photoUrl;
+            
+            
+            marker = new google.maps.Marker({
+                       map: map,
+                       draggable: true,
+                       animation: google.maps.Animation.DROP,
+                       position: plot.geometry.location,
+                       title: plot.name,
+                       icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/parking_lot_maps.png'
+                       // icon: location.photos[0].getUrl({maxWidth: 35, maxHeight: 35})
+                     });
+            
+           
+           // marker.setSnippet(plot.PlaceId);
+            markers.push(marker);
+
+           // img = document.createElement("img")
+           // img.src = location.photos[0].getUrl({maxWidth: 400, maxHeight: 400});
+            
+            
+            marker.addListener('click', function() {   
+              
+              
+            if (Click_List.includes(this.title) == false) {
+               Click_List.push(this.title);  
+               
+               li = document.createElement('li');
+               li.textContent = this.title;
+               
+               placesList.appendChild(li);   
+            }
+
+            infowindow.setContent(this.title);
+            infowindow.open(map, this);
+            
+
+            if (this.getAnimation() !== null) {
+                   this.setAnimation(null);
+                } else {
+                 this.setAnimation(google.maps.Animation.BOUNCE);
+            };
+
+            });
+            
+        }
+            
+    }
+
+
+        /*
+
+        function createPhotoMarker(place) {
+         var photos = place.photos;
+             if (!photos) {
+                   return;
+               }
+
+          var marker = new google.maps.Marker({
+                       map: map,
+                       position: place.geometry.location,
+                       title: place.name,
+                      icon: photos[0].getUrl({'maxWidth': 35, 'maxHeight': 35})
+                     });
+        }
+
+           var photoUrl = place.photos[0].getUrl({maxWidth: 400, maxHeight: 400});
+            var img = document.createElement("img");
+            img.setAttribute('src', photoUrl + "photo.jpg");
+            document.getElementById('place-list').appendChild(img);
+
+
+       var markers = locations.map(function(location, i) {
+        return new google.maps.Marker({
+            position: location,
+            label: labels[i % labels.length]
+        });
+    });
+
+        var getNextPage = null;
+        var moreButton = document.getElementById('more');
+        moreButton.onclick = function() {
+          moreButton.disabled = true;
+          if (getNextPage) getNextPage();
+        };
+
+        
+        service.nearbySearch(
+            {location: pyrmont, radius: 500, type: ['restaurants']},
+            function(results, status, pagination) {
+              if (status !== 'OK') return;
+                 createMarkers(results);
+              
+            });
+         */
+      
+/*
+      function createMarkers(places) {
+        var bounds = new google.maps.LatLngBounds();
+        var placesList = document.getElementById('places');
+
+        for (var i = 0, place; place = places[i]; i++) {
+          var image = {
+            url: place.icon,
+            size: new google.maps.Size(71, 71),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(17, 34),
+            scaledSize: new google.maps.Size(25, 25)
+          };
+
+          var marker = new google.maps.Marker({
+            map: map,
+
+            title: place.name,
+            position: place.geometry.location
+          });
+
+          var li = document.createElement('li');
+          li.textContent = place.name;
+          placesList.appendChild(li);
+
+          bounds.extend(place.geometry.location);
+        }
+        map.fitBounds(bounds);
+        
+      } */
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?&key=AIzaSyBhtEAceYphs2RCJ52_YjBLyp4pf0kxUoM&libraries=places&callback=initMap" async defer></script>
+  </body>
 </html>
