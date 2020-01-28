@@ -6,6 +6,7 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="crossorigin="anonymous"></script>
     <title>Place search pagination</title>
     <style>
       /* Always set the map height explicitly to define the size of the div
@@ -25,26 +26,44 @@
           display:grid;
           height: 100%;
           grid-template-columns : 2fr 1fr;
-          grid-template-rows: 9fr 3fr;
-          grid-template-rows : 2;
+          grid-template-rows: 1fr 9fr 1fr;
+          
       }
 
       #map {
-        
+        height: 100%;
         grid-column :1 / 3;
+        grid-row: 2;
       }
 
       .info-display{
-          
+        height: 100%;   
       }
       #text-display {
-          
+         height:100%; 
+         grid-row: 3;
+         grid-column: 1 ;
+      }
+
+      #title {
+          grid-row : 1;
+          grid-column :1 / 3;
+          height: 100%;
       }
 
       #img-display {
-          background-size:contain;
-          grid-row: 2;
+          object-fit:cover;
+          
+          width: 100%;
+          height: 100%;
+          grid-row: 3;
           grid-column:2;
+      }
+
+      .image-style {
+          object-fit:cover;
+          width: 100%;
+          height: 100%;
       }
 
       #right-panel {
@@ -76,31 +95,7 @@
         border: 1px solid #999;
         background: #fff;
       }
-      h2 {
-        font-size: 22px;
-        margin: 0 0 5px 0;
-      }
-      ul {
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
-        height: 271px;
-        overflow-y: scroll;
-      }
-      li {
-        background-color: #f1f1f1;
-        padding: 10px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-      }
-      li:nth-child(odd) {
-        background-color: #fcfcfc;
-      }
-      #more {
-        width: 100%;
-        margin: 5px 0 0 0;
-      }
+      
     </style>
    
   </head>
@@ -108,22 +103,36 @@
    <!-- <div id="map"></div> -->
      
     <div class = "contain">
-         <div class="info-display" id="map"></div>
-        <div class="info-display" id="text-display">
+       <div>
+        <div>
+          Discover the home of Brexit!
         </div>
 
-        <div class = "info-display" id="img-display">
+        <div>
+          <input type="radio" name="type" id="Hotel" value="lodging" checked="checked">
+          <label for="Hotel">Sleep it off</label>
+
+          <input type="radio" name="type" id="bar" value="bar">
+          <label for="bar">Booze Holes</label>
+
+          <input type="radio" name="type" id="restaurant" value="restaurant">
+          <label for="restaurant">Stuff your Face</label>
+
+          <input type="radio" name="type" id="museum" value="museum">
+          <label for="museum">Culture!</label>
         </div>
+       </div>
+        <div id="map"></div>
+        <div id="text-display"></div>
+        <div id="img-display"></div>
      </div>
 <script>
-      // This example requires the Places library. Include the libraries=places
-      // parameter when you first load the API. For example:
-      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
-
+  
       var map;
       var img;
       var infowindow; 
       var placesList;
+      var img_parent;
       var start_centre;
       var request;
       var service;
@@ -140,16 +149,31 @@
         // infoWindow = new google.maps.infoWindow();
         map = new google.maps.Map(document.getElementById('map'),
            {
-          center: start_centre,
-          zoom: 15
-
-                 });
+            center: start_centre,
+            Zoom:15,
+            minZoom:12,
+            maxZoom: 18,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false,
+            restriction: {
+                        latLngBounds: {
+                           north: 51.561872,
+                           south: 51.446044,
+                           west: -0.210685,
+                           east: -0.03846
+                        },
+                        strictBounds: true 
+                         }
+            });
      
          service = new google.maps.places.PlacesService(map);
          infowindow = new google.maps.InfoWindow({content:contentString});
 
          placesList = document.getElementById('text-display');
-            
+         img_parent = document.getElementById('img-display');
+
+       
         
        map.addListener('rightclick', function(e){
             
@@ -157,20 +181,17 @@
           markers[i].setMap(null); 
          }     
            markers = [];
-
-             //map.setCenter(e.latLng);
-            // clearResults(markers);
-            
+            var x= Select_Activity();
+            console.log(x);
            var request = {
               location: e.latLng,
               radius: 1000,
-              types: ["lodging"]
+              types: [Select_Activity()]
                };
 
            
            service.nearbySearch(request, function(results, status) {
              if (status == google.maps.places.PlacesServiceStatus.OK) {
-                 console.log(results);
                for (var i = 0; i < results.length; i++) {             
                  createMarker(results[i],i,request.types);
                 }
@@ -215,10 +236,25 @@
                      placesList.innerHTML = "<h1>"+ capitalizeFirstLetter(prev_info.placeResult.types[0]) +" Information:</h1>" +"<h3>"+ prev_info.placeResult.name + "  "
                                      + valid_field(prev_info.placeResult.rating)+" "+ place.formatted_address +"</h3>"; 
                      
-                     console.log(prev_info.placeResult); 
-                     img = document.getElementById("img-display");
-                     img.src = prev_info.placeResult.photos[0].getUrl();
-                     // document.getElementById("img-display").appendChild(img);
+                    
+                     
+                     
+                     if (img_parent.hasChildNodes()) {
+                         img_parent.removeChild(img_parent.childNodes[0]);
+                     }
+                         
+                     var new_image = document.createElement("img");
+                     
+                     var myImage = $('<img/>');
+                    
+                     
+                     myImage.attr('class', "image-style");
+                     myImage.attr('src', prev_info.placeResult.photos[0].getUrl({maxWidth: 400, maxHeight: 400}));
+                     
+                     //new_image.src = prev_info.placeResult.photos[0].getUrl({maxWidth: 400, maxHeight: 400});
+                    // $('#img-display img').addClass("image-style");
+                   myImage.appendTo($("#img-display"));
+                     //document.getElementById("img-display").appendChild(myImage);
 
                      
                  }
@@ -236,6 +272,21 @@
 
     }
 
+            function Select_Activity () {
+                var criteria;
+
+               var rates = $("input[name~='type']");
+               
+               for(var i = 0; i < rates.length; i++){
+                  if(rates[i].checked){
+                     criteria = rates[i].value;
+                     console.log(rates);
+                    }
+                }
+                
+               return criteria;
+            }
+ 
             function toggleBounce(ele) {
                  if (ele.getAnimation() !== null) {
                    ele.setAnimation(null);
@@ -260,10 +311,10 @@
                 Icon_Str ='assets/images/icons8-hotel-40.png'}
                 else if (Estab_type == 'restaurant') {
                 Icon_Str ='assets/images/icons8-hamburger-50.png'}
-                else if (Estab_type == 'bar' || Estab_type == 'night_club')  {
+                else if (Estab_type == 'bar')  {
                 Icon_Str ='assets/images/icons8-bar-40.png'}
-                else if (Estab_type == 'movie_theater') {
-                Icon_Str ='assets/images/icons8-theatre-seats-40.png'}
+                else if (Estab_type == 'museum') {
+                Icon_Str ='assets/images/icons8-museum-40.png'}
                 else {Icon_Str = null}
 
                 return Icon_Str;
