@@ -12,6 +12,7 @@
        * element that contains the map. */
       #map {
         height: 100%;
+        width: 100%;
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
@@ -19,6 +20,33 @@
         margin: 0;
         padding: 0;
       }
+
+      .contain {
+          display:grid;
+          height: 100%;
+          grid-template-columns : 2fr 1fr;
+          grid-template-rows: 9fr 3fr;
+          grid-template-rows : 2;
+      }
+
+      #map {
+        
+        grid-column :1 / 3;
+      }
+
+      .info-display{
+          
+      }
+      #text-display {
+          
+      }
+
+      #img-display {
+          background-size:contain;
+          grid-row: 2;
+          grid-column:2;
+      }
+
       #right-panel {
         font-family: 'Roboto','sans-serif';
         line-height: 30px;
@@ -77,291 +105,176 @@
    
   </head>
   <body>
-    <div id="map"></div>
+   <!-- <div id="map"></div> -->
      
-    
-    <div id="right-panel">
-      <ul id="location-details">
-     <!--
-      <h2>Results</h2>
-      <ul id="places"></ul>
-      <button id="more">More results</button>
-      -->
-       </ul>
-    </div>
-     
+    <div class = "contain">
+         <div class="info-display" id="map"></div>
+        <div class="info-display" id="text-display">
+        </div>
+
+        <div class = "info-display" id="img-display">
+        </div>
+     </div>
 <script>
       // This example requires the Places library. Include the libraries=places
       // parameter when you first load the API. For example:
       // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
 
       var map;
-      var li;
       var img;
-      var plotsID = [];
       var infowindow; 
       var placesList;
       var start_centre;
       var request;
       var service;
-      var marker;
-      var temp;
       var markers =[];
-      var Click_List = [];
 
-      function initMap() {
+    function initMap() {
         
-        var contentString = '<div id="content">'+
-      '<div id="siteNotice">'+
-      '</div>'+
-      '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
-      '<div id="bodyContent">'+
-      '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
-      'sandstone rock formation in the southern part of the '+
-      'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
-      'south west of the nearest large town, Alice Springs; 450&#160;km '+
-      '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
-      'features of the Uluru - Kata Tjuta National Park. Uluru is '+
-      'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
-      'Aboriginal people of the area. It has many springs, waterholes, '+
-      'rock caves and ancient paintings. Uluru is listed as a World '+
-      'Heritage Site.</p>'+
-      '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
-      'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
-      '(last visited June 22, 2009).</p>'+
-      '</div>'+
-      '</div>';
+        var contentString = '<div id="content">';
         
         // Create the map.
-        start_centre = new google.maps.LatLng(37.419857, -122.078827);
+        
+        start_centre = {lat: 51.506164642, lng: -0.124832834};
         
         // infoWindow = new google.maps.infoWindow();
         map = new google.maps.Map(document.getElementById('map'),
            {
           center: start_centre,
-          zoom: 14
+          zoom: 15
+
                  });
+     
+         service = new google.maps.places.PlacesService(map);
+         infowindow = new google.maps.InfoWindow({content:contentString});
 
-       // infowindow = new google.maps.InfoWindow({content:contentString});
-       
-        // Create the places service.
-        service = new google.maps.places.PlacesService(map);
-        
-       /*
-        map.addListener('click', function(e) {
-          placeMarkerAndPanTo(e.latLng, map);
-            });
-
-        function placeMarkerAndPanTo(latLng, map) {
-          var marker = new google.maps.Marker({
-           position: latLng,
-           map: map
-            });
-               map.panTo(latLng);
-               infowindow.open(map, marker);
-        }
-          */
-            var header = document.createElement('h1');
-            var panel = document.getElementById('right-panel');
-            header.textContent = 'Cafe List';
-            panel.insertBefore(header,panel.childNodes[0]);
-            placesList = document.getElementById('location-details');
+         placesList = document.getElementById('text-display');
             
-
-        map.addListener('rightclick', function(e){
+        
+       map.addListener('rightclick', function(e){
             
          for (var i = 0; i < markers.length; i++) {  
-          markers[i].setMap(null);
-             var list = document.getElementsByTagName('li');     
+          markers[i].setMap(null); 
          }     
+           markers = [];
 
-             map.setCenter(e.latLng);
+             //map.setCenter(e.latLng);
             // clearResults(markers);
             
            var request = {
               location: e.latLng,
               radius: 1000,
-              types: ['cafe']
+              types: ["lodging"]
                };
 
-           service = new google.maps.places.PlacesService(map);
-           service.nearbySearch(request, callback);
-
-         
-
-            function callback(results, status) {
-            if (status == google.maps.places.PlacesServiceStatus.OK) {
-
-               for (var i = 0; i < results.length; i++) {               
-                 createMarker(results[i],i);
+           
+           service.nearbySearch(request, function(results, status) {
+             if (status == google.maps.places.PlacesServiceStatus.OK) {
+                 console.log(results);
+               for (var i = 0; i < results.length; i++) {             
+                 createMarker(results[i],i,request.types);
                 }
-            }
-            }
-          });
+             }
+            });
+  
+       });
+    }      
+            
+          
+    function createMarker(plot,index,place_type) {
+        var photoUrl;
 
-        function createMarker(plot,index) {
-            var photoUrl;
-                      
-            marker = new google.maps.Marker({
+            markers[index] = new google.maps.Marker({
                        map: map,
-                       draggable: true,
+                       draggable: false,
                        animation: google.maps.Animation.DROP,
                        position: plot.geometry.location,
                        title: plot.name,
-                       label: (index + 1).toString(),
-                       icon: 'assets/images/icons8-coffee-to-go-48.png'
-                       // icon: location.photos[0].getUrl({maxWidth: 35, maxHeight: 35})
+                       icon: Set_Icon (place_type) 
                      });
             
-            markers.push(marker);
-            plotsID.push(plot.place_id);
-           
-            infowindow = new google.maps.InfoWindow({content:contentString});
+            markers[index].placeResult=plot;
             
-            
+               
            // img = document.createElement("img")
            // img.src = location.photos[0].getUrl({maxWidth: 400, maxHeight: 400});
+                 
+           markers[index].addListener('click', function() {   
+                var prev_info = this;
             
-            
-           marker.addListener('click', function() {   
-              
-            if (Click_List[0] != this.title) {
-                $('li').remove();
-               Click_List[0]= this.title;  
-                
                 var request = {
-                  placeId: plotsID[parseInt(this.label)-1],
-                  fields: ['name','formatted_address', 'photos']
+                  placeId: this.placeResult.place_id,
+                  fields: ['formatted_address']
                 };
+               
+              service = new google.maps.places.PlacesService(map);
 
-               service = new google.maps.places.PlacesService(map);
-               service.getDetails(request, callback);
-                      
-              function callback(place, status) {
-                 if (status == google.maps.places.PlacesServiceStatus.OK) {
-                      
-                     li = document.createElement('li');
-                     img= document.createElement('img');
-                     li.textContent = place.name;
-                     //img.src = place.photos[0];
-                     placesList.appendChild(li);
+              service.getDetails(request, function callback(place, status) {  
+                 if (status == google.maps.places.PlacesServiceStatus.OK) {  
+                       
+                     placesList.innerHTML = "<h1>"+ capitalizeFirstLetter(prev_info.placeResult.types[0]) +" Information:</h1>" +"<h3>"+ prev_info.placeResult.name + "  "
+                                     + valid_field(prev_info.placeResult.rating)+" "+ place.formatted_address +"</h3>"; 
+                     
+                     console.log(prev_info.placeResult); 
+                     img = document.getElementById("img-display");
+                     img.src = prev_info.placeResult.photos[0].getUrl();
+                     // document.getElementById("img-display").appendChild(img);
+
+                     
                  }
-              }
-
-            }
-               infowindow.setContent(this.title);
+              });
+               
+               infowindow.setContent(prev_info.placeResult.name);
                infowindow.open(map, this);
-            
 
-            if (this.getAnimation() !== null) {
-                   this.setAnimation(null);
-                } else {
-                 this.setAnimation(google.maps.Animation.BOUNCE);
-            };
-
+               for (var i = 0; i < markers.length; i++) {  
+                    markers[i].setAnimation(null)
+               }
+                    toggleBounce(this);
+              
             });
 
-          
-            
-        }
-            
     }
 
+            function toggleBounce(ele) {
+                 if (ele.getAnimation() !== null) {
+                   ele.setAnimation(null);
+                 } else {
+                  ele.setAnimation(google.maps.Animation.BOUNCE);
+                  }
+            }
 
-        /*
-
- for (count = 0; count < locations.length; count++) {
-    marker = new google.maps.Marker ({
-      position: plot.geometry.location,
-      map: map,
-      title: plot.name
-    });
-
-     marker.addListener('click', (function (marker, count) {
-      return function () {
-        infowindow.setContent(locations[count][0]);
-        infowindow.open(map, marker);
-      }
-    }) (marker, count)
-    );
- }
-
-        function createPhotoMarker(place) {
-         var photos = place.photos;
-             if (!photos) {
-                   return;
-               }
-
-          var marker = new google.maps.Marker({
-                       map: map,
-                       position: place.geometry.location,
-                       title: place.name,
-                      icon: photos[0].getUrl({'maxWidth': 35, 'maxHeight': 35})
-                     });
-        }
-
-           var photoUrl = place.photos[0].getUrl({maxWidth: 400, maxHeight: 400});
-            var img = document.createElement("img");
-            img.setAttribute('src', photoUrl + "photo.jpg");
-            document.getElementById('place-list').appendChild(img);
+            function valid_field (txt) {
+                     var tmp="";
+                     if (txt != null) {tmp = txt};
+                     return tmp;
+            }
 
 
-       var markers = locations.map(function(location, i) {
-        return new google.maps.Marker({
-            position: location,
-            label: labels[i % labels.length]
-        });
-    });
+            function Set_Icon (Estab_type) {
+                var Icon_Str;
 
-        var getNextPage = null;
-        var moreButton = document.getElementById('more');
-        moreButton.onclick = function() {
-          moreButton.disabled = true;
-          if (getNextPage) getNextPage();
-        };
+                if (Estab_type == 'cafe') {
+                Icon_Str ='assets/images/icons8-coffee-to-go-48.png'}
+                else if (Estab_type == 'lodging') {
+                Icon_Str ='assets/images/icons8-hotel-40.png'}
+                else if (Estab_type == 'restaurant') {
+                Icon_Str ='assets/images/icons8-hamburger-50.png'}
+                else if (Estab_type == 'bar' || Estab_type == 'night_club')  {
+                Icon_Str ='assets/images/icons8-bar-40.png'}
+                else if (Estab_type == 'movie_theater') {
+                Icon_Str ='assets/images/icons8-theatre-seats-40.png'}
+                else {Icon_Str = null}
 
-        
-        service.nearbySearch(
-            {location: pyrmont, radius: 500, type: ['restaurants']},
-            function(results, status, pagination) {
-              if (status !== 'OK') return;
-                 createMarkers(results);
-              
-            });
-         */
-      
-/*
-      function createMarkers(places) {
-        var bounds = new google.maps.LatLngBounds();
-        var placesList = document.getElementById('places');
+                return Icon_Str;
+            }
 
-        for (var i = 0, place; place = places[i]; i++) {
-          var image = {
-            url: place.icon,
-            size: new google.maps.Size(71, 71),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(17, 34),
-            scaledSize: new google.maps.Size(25, 25)
-          };
+            function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
 
-          var marker = new google.maps.Marker({
-            map: map,
-
-            title: place.name,
-            position: place.geometry.location
-          });
-
-          var li = document.createElement('li');
-          li.textContent = place.name;
-          placesList.appendChild(li);
-
-          bounds.extend(place.geometry.location);
-        }
-        map.fitBounds(bounds);
-        
-      } */
     </script>
      <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="crossorigin="anonymous"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?&key=AIzaSyBhtEAceYphs2RCJ52_YjBLyp4pf0kxUoM&libraries=places&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?&key=AIzaSyBhtEAceYphs2RCJ52_YjBLyp4pf0kxUoM&region=GB&libraries=places&callback=initMap" async defer></script>
   </body>
 </html>
