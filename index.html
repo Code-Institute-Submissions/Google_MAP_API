@@ -7,15 +7,14 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+    <!--<link rel="stylesheet" href="assets/css/style.css"> -->
     <title>London Travel App</title>
+  </head>
+
+
     <style>
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-      #map {
-        height: 100%;
-        width: 100%;
-      }
-      /* Optional: Makes the sample page fill the window. */
+     
       html, body {
         height: 100%;
         margin: 0;
@@ -24,18 +23,16 @@
 
       .contain {
           display:grid;
-          
-          grid-template-columns : 1fr;
-          /* grid-template-columns : repeat(auto-fit,minmax(200px, 1fr)); */
-          grid-template-rows: auto minmax(100px,auto) auto 3fr minmax(200px,1fr);  
+          grid-template-columns : 1fr 1fr minmax(auto,1fr);
+          grid-template-rows: auto auto auto 3fr minmax(200px,1fr);  
       }
 
-      .banner{
-         grid-row:1;
-        grid-column: 1 / 5;
+      .banner {
+        grid-row:1;
+        grid-column: 1 / 4;
         text-align: center; 
         color: black;
-        font-weight: bold;
+        font-weight: bolder;
         font-size: 1.5em;
         background-image: url("assets/images/UK_Flag.jpg");
         opacity: 0.7; 
@@ -43,65 +40,117 @@
         background-position: center; 
         background-size: cover;
       }
-
+      
       .sponsor {     
           grid-row : 2;
-          grid-column :1 / 5;
+          grid-column :1 / 4; 
           display: grid;
           grid-gap: 0.15em;
           grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
-          
           background-color:#528EE1;
       }
 
+      @media only screen and (min-width: 600px) {
+      .sponsor {      
+          grid-column : 3;
+          grid-row: 4;
+          display: grid;
+          grid-gap: 0.15em;
+          grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+          background-color:#528EE1;
+      }
+      }
+
+
       .activity {
           grid-row : 3;
-          grid-column :1 / 5;
+          grid-column :1 / 4;
           height: 100%;
-          background-color: #ff4d4d;
-          
+          background-color: #ff4d4d;   
       }
 
       #map {
         height: 100%;
-        grid-column :1 / 5;
+        grid-column :1 / 4;
         grid-row: 4;
       }
 
+      @media only screen and (min-width: 600px) {
+      #map {
+        height: 100%;
+        grid-column :1 / 3;
+        grid-row: 4;
+      }
+      }
+
       .info-display {
-        
         grid-row: 5;
-        grid-column: 1 / 5; 
+        grid-column: 1 / 4; 
         display:grid;
-        grid-template-columns: 3fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
         grid-template-rows: minmax(0,1fr);
+      }
+
+      .footer-display {
+           grid-row: auto;
+           grid-column: 3;
+           background-color:#DCD9D9;
+           display:flex;
+           align-items:center;
+      }
+      
+      .footer-display ul {
+          line-height:1.4;
+          list-style:none;
+          font-size:1.1em;
+          padding-left:5px;
       }
 
       #text-display {
          height:100%; 
          grid-row: auto;
-         grid-column: 1;
-         background-image: url("assets/images/UK_Flag.jpg");
-         opacity: 0.7; 
-         background-repeat: no-repeat; 
-         background-position: center; 
-         background-size: cover;
-         text-align:right;
-         font-size:1.2em;
-         padding-right:30px;
+         grid-column: 1 / 3;
+         background-color:#cf142b;
+          
+         display:flex;
+         align-items:center;
+         text-align:left;
+         font-size:1.3em;
+         padding-left:10px;
       }
 
+      @media only screen and (min-width: 600px) { 
+      #text-display {
+         height:100%; 
+         grid-row: auto;
+         grid-column: 2;
+         background-color:#cf142b;
+          
+         display:flex;
+         align-items:center;
+         text-align:left;
+         font-size:1.3em;
+         padding-left:10px;
+      }
+      }
+
+      #img-display {
+          display:none;
+      }
+
+      @media only screen and (min-width: 600px) {
       #img-display {
           background-color:#528EE1; 
           display:flex;
           object-fit:cover;
           text-align:center;
           align-items:center;
-          justify-content: center;
+          font-size:1.3em;
           height: 100%;
           grid-row: 1;
-          grid-column:2;
+          grid-column:1;
       }
+      
 
       .image-style {
           object-fit:cover;
@@ -110,14 +159,15 @@
           text-align:center;
           justify-content: center;
       }
+      }
 
       .Box {
           background-color: #444455;
           color: #fff;
           opacity: 0.8;
           margin:0;
-          word-wrap:break-word;
-           word-break: break-all;
+          overflow-wrap:break-word;
+           
           padding:10px;
           line-height: 1.2em;
           border-radius: 2px;
@@ -136,12 +186,12 @@
 
     </style>
    
-  </head>
+ 
   <body>
      
     <div class = "contain">
         <div class="banner">
-                <h1>BrexitBreaks! Have a Riot party in London!</h1> 
+                <h1>BrexitBreaks! Have a Riot Party in London!</h1> 
         </div>
 
         <div class="sponsor">
@@ -190,11 +240,22 @@
         <div id="map"></div>
         
         <div class="info-display">
-          <div id="text-display"></div>
-          <div id="img-display">
-                <h1>Brexit Breaks! Best Locations, Best Deals!</h1> 
-                
+          <div id="text-display">
+              Brexit Breaks! Best London Locations!   
           </div>
+          <div id="img-display">
+                Brexit Breaks! Best Party Deals, Boris loves us!   
+          </div>
+          <div class="footer-display">
+               <ul>
+                 <li>BrexitBreaks</li>
+                 <li>5 Fantasy Way</li>
+                 <li>Croydon</li>
+                 <li>CR0 5FH</li>
+                 <li><i class="fas fa-phone-square"></i> : +44 207 365 1584</li>
+                 <li><i class="fas fa-at"></i> : Brexit@Breakparty.co.uk</li>
+               </ul>
+           </div>
         </div>  
     </div>
 <script>
@@ -211,10 +272,7 @@
 
     function initMap() {
         
-        var contentString = '<div id="content">';
-        
-        // Create the map.
-        
+        // Central London.
         start_centre = {lat: 51.506164642, lng: -0.124832834};
         
         // infoWindow = new google.maps.infoWindow();
@@ -239,19 +297,18 @@
             });
      
          service = new google.maps.places.PlacesService(map);
-         infowindow = new google.maps.InfoWindow({content:contentString});
+         infowindow = new google.maps.InfoWindow();
 
          placesList = document.getElementById('text-display');
          img_parent = document.getElementById('img-display');
          
-       
-        
+          
        map.addListener('rightclick', function(e){
             
          for (var i = 0; i < markers.length; i++) {  
           markers[i].setMap(null); 
          }     
-           markers = [];
+          markers = [];
 
            var request = {
               location: e.latLng,
@@ -286,7 +343,7 @@
             markers[index].placeResult=plot;
             
                  
-           markers[index].addListener('click', function() {   
+          markers[index].addListener('click', function() {   
                 var prev_info = this;
             
                 var request = {
@@ -296,22 +353,23 @@
                
               service = new google.maps.places.PlacesService(map);
 
-              service.getDetails(request, function callback(place, status) {  
+              service.getDetails(request, function (place, status) {  
                  if (status == google.maps.places.PlacesServiceStatus.OK) {  
                        
-                     placesList.innerHTML = "<h3>"+ prev_info.placeResult.name + "<br> "
-                                     + valid_field(prev_info.placeResult.rating)+"<br> "+ place.formatted_address +"</h3>"; 
+                     placesList.innerHTML = "<p>"+ prev_info.placeResult.name + "<br> "
+                                     + "Rating: " + valid_field(prev_info.placeResult.rating)+" stars"+"<br> "
+                                     + "Address: " + place.formatted_address +"<br>"
+                                     +"Phone: " + place.international_phone_number + "</p>"; 
                                
                         
                      if (img_parent.hasChildNodes()) {
                         $(img_parent).empty();
                      }
                          
-                     var new_image = document.createElement("img");
+                    // var new_image = document.createElement("img");
                      
                      var myImage = $('<img/>');
                     
-                     
                      myImage.attr('class', "image-style");
                      myImage.attr('src', prev_info.placeResult.photos[0].getUrl({maxWidth: 400, maxHeight: 400}));
                      
@@ -378,12 +436,11 @@
                 return Icon_Str;
             }
 
-            function capitalizeFirstLetter(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
-            }
+            
 
     </script>
      <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="crossorigin="anonymous"></script>
     <script src="https://maps.googleapis.com/maps/api/js?&key=AIzaSyBhtEAceYphs2RCJ52_YjBLyp4pf0kxUoM&region=GB&libraries=places&callback=initMap" async defer></script>
+    <!--<script src="assets/js/maps.js"></script> -->
   </body>
 </html>
