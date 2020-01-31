@@ -11,10 +11,14 @@
 
     function initMap() {
         
-        
         start_centre = {lat: 51.506164642, lng: -0.124832834};
+        Start_location(start_centre,function(start_city){
+            $("span.start").text(start_city);
+        });
         
        
+        //document.getElementById('start').textContent = start_city; 
+
         map = new google.maps.Map(document.getElementById('map'),
            {
             center: start_centre,
@@ -175,4 +179,31 @@
                 return Icon_Str;
             }
 
+   
+       function Start_location (location, callback) {
+        var geocoder;
+         
+        geocoder = new google.maps.Geocoder();
+        
+
+        geocoder.geocode({'latLng': location}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            
+            if (results[0]) {
+                var add= results[0].formatted_address;
+                var  value = add.split(",");
+                count = value.length;
+                var city = value[count-2];
+                var city2 = city.split(" ");
+                
+                callback (city2[1]);
+                                     /* November 2017, Stackover Flow snippet by Max*/
+            }
+            
+        }
+        
+        });
+         
+       }
+    
             
