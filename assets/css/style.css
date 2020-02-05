@@ -1,7 +1,7 @@
  
       @import url('https://fonts.googleapis.com/css?family=Montserrat|Roboto+Mono&display=swap');
 
-      html, body {
+      html,body {
         height: 100%;
         font-family: Montserrat;
         margin: 0;
@@ -99,7 +99,7 @@
       .info-display {
           grid-area: info-display;
           display: grid;
-          grid-template-columns : minmax(min-content,1fr) 1fr minmax(min-content,1fr);
+          grid-template-columns : minmax(min-content,1fr) 1.5fr minmax(min-content,1fr);
           grid-template-rows: auto;      
       }
 
@@ -151,7 +151,11 @@
           align-items:center;
           justify-content: center;
           max-height: 100%;
-          font-size:1.3em;          
+          font-size:1.3em;  
+
+          background-position: center; 
+          background-repeat: no-repeat; 
+          background-size: cover;        
       }
 
        #text-display {

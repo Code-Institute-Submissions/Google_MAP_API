@@ -145,24 +145,20 @@
                                      + "Address: " + place.formatted_address +"<br>"
                                      +"Phone: " + place.international_phone_number + "</p>"; 
                                
-                                     // Deletes existing Marker image on the DOM and replace
-                                     // it with the selected one.
 
+                                     // Deletes existing text in the image container
                      if (img_parent.hasChildNodes()) {
                         $(img_parent).empty();
                      }
-                         
-                     var myImage = $('<img/>');
-                    
+                      
+                     var photoUrl = prev_info.placeResult.photos[0].getUrl({maxWidth: 400, maxHeight: 400});
                      
-                     myImage.attr('class', "image-style");
-                     myImage.attr('src', prev_info.placeResult.photos[0].getUrl({maxWidth: 400, maxHeight: 400}));
-                     
-                     myImage.appendTo($("#img-display"));
-                   
+                     $("#img-display").css('background-image',"url(" + photoUrl + ")");
+
                  }
-               });
+              });
                
+              
                infowindow.setContent(prev_info.placeResult.name);
                infowindow.open(map, this);
 

@@ -21,7 +21,7 @@ them to buy sponsored product.
 
 
 ## Strategy
-Use nationisitc sentiment surrounding Brexit protests to promote a simple and easy to use London travel application and obtain revenue through 
+Use nationalisitc sentiment surrounding Brexit protests to promote a simple and easy to use London travel application and obtain revenue through 
 users purchasing from discounted sponsored sites. The site uses overt UK nationalism in the design and sets itself apart from mainstream coporate
 sites that wish to be neutral. Our site is focussed on London since its the centre of Brexit protests which is the site's founding strategy.
 
@@ -30,7 +30,7 @@ The map is restricted to central London and activity options offered are limited
 Since the Brexit protests visits are only short stay there is no requirement for an extensive range of activities.
 
 ## Structure
-To promote ease of use the site will consist of one page. The header banner will declare nationalistic affiliation and the sponsors will be displayed 
+To promote ease of use the site will consist of one page. The header banner will declare UK affiliation and the sponsors will be displayed 
 prominently to encourage use. The map is the centrepiece and will take up most of the page with specific location information displayed in the 
 footer to avoid cluttering up the map.
 
@@ -62,12 +62,12 @@ ICONS based on the location 'types' and these were tested by comparing the dervi
 
 1. Activities are revealed by selecting the radial buttons which activates the marker placement or dragging the map. These markers are cleared once 
 another option is selected or the map is once again dragged. If a map 'clear' option is selcted no searches are perfromed on the map. 
-An absence Google Place API location photos will yield a null marker and is not loaded to the screen.This process was tested and operates effectively. 
+An absent Google Place API location photos will yield a null marker and is not loaded to the screen.This process was tested and operates effectively. 
 The map also successfully restricts the user to London city.
 
 2. DOM Interaction
 This was tested by clicking on multiple marker ICONs of various types to reveal place photo, address and rating in the footer. The marker information
-displayed in the DOM is deleted once another marker is selected. I tested that all markers were removed once another activity is selected or the map is dragged.
+displayed in the DOM is deleted once another marker is selected. Markers were tested that they vanished once another activity is selected or the map is dragged.
 The photo is not displayed on mobile devices to conserve space and this has been tested successfully.
 
 3. The user selects activity in the DOM check boxes. This ensures only one activity is selected and avoids crowding the map. This DOM interaction successfully 
