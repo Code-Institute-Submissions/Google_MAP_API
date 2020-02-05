@@ -13,7 +13,7 @@
         
                                          // Find the start location city and display on the DOM
         start_centre = {lat: 51.506164642, lng: -0.124832834};
-        Start_location(start_centre,function(start_city){
+        Start_location(start_centre,function(start_city) {
             $("span.start").text(start_city);
         });
         
@@ -71,13 +71,15 @@
            Search();
        }); 
 
-       google.maps.event.addDomListener(clear,'change',function() {
-           clearMarkers(markers);
+       google.maps.event.addDomListener(clear,'change',function() {  
+           clearMarkers();
        }); 
 
                                                 // Once user stops dragging map then a search is commenced.
        map.addListener('dragend', function(){
-            Search();       
+           if (Select_Activity() != 'clear') { 
+               Search() 
+            };       
        });
     }      // End InitMaP
     
@@ -85,8 +87,8 @@
 
     function Search () {
            
-           clearMarkers(markers);
-
+           clearMarkers();
+      
                             // Search current map bounds by selected activity in the DOM.
            var request = {
               bounds: map.getBounds(),
@@ -176,14 +178,15 @@
     }
 
 
-    function clearMarkers (MarkArray) {
-                                     
-        for (var i = 0; i < MarkArray.length; i++) {  
-             MarkArray[i].setMap(null);
+    function clearMarkers () {
+        for (var i = 0; i < markers.length; i++) {  
+            if (markers[i]) {       // If markers[i] is empty don't use setMap - avoid console error
+                markers[i].setMap(null)
+            };
         }   
 
-         MarkArray = [];
-         MarkArray.length = 0;        
+         markers = [];
+         markers.length = 0;        
     }
 
 
