@@ -142,8 +142,8 @@
                                     // Marker info is sent to the DOM
                      placesList.innerHTML = "<p>"+ prev_info.placeResult.name + "<br> "
                                      + "Rating: " + valid_field(prev_info.placeResult.rating)+" stars"+"<br> "
-                                     + "Address: " + place.formatted_address +"<br>"
-                                     +"Phone: " + place.international_phone_number + "</p>"; 
+                                     + "Address: " + valid_field(place.formatted_address) +"<br>"
+                                     +"Phone: " + valid_field(place.international_phone_number) + "</p>"; 
                                
 
                                      // Deletes existing text in the image container
@@ -165,7 +165,9 @@
                                         // Animate the chosen marker only
 
                for (var i = 0; i < markers.length; i++) {  
-                    markers[i].setAnimation(null)
+                    if (markers[i]) {
+                        markers[i].setAnimation(null)
+                    }    
                }
                     toggleBounce(this);
               
@@ -209,7 +211,7 @@
     }
 
     function valid_field (txt) {
-          var tmp="";
+          var tmp="N/a";
         if (txt != null) {tmp = txt};
           return tmp;
     }
